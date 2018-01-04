@@ -19,4 +19,4 @@ nohup ~/kafka_2.11-0.10.1.0/bin/kafka-server-start.sh ~/kafka_2.11-0.10.1.0/conf
 ##On Google Compute Engine: Copy your project to your home directory on the GCE Virtual Machine:
 cd /home/vennkumar/KafkaStructExample
 
-java -Dlog4j.configuration="file:/home/vennkumar/KafkaStructExample/src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.DataAggrProto
+java -Dlog4j.configuration="file:~/KafkaStructExample/src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.DataAggrProto
