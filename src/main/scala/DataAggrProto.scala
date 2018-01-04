@@ -24,9 +24,14 @@ object DataAggrProto {
   val sc = new SparkContext(conf)
 
   val spark = SparkSession.builder.
-  master("local")
+  master("local[2]")
   .appName("spark session example")
   .getOrCreate()
+//
+//    val conf = new SparkConf()
+//      .setMaster("local[2]")
+//      .setAppName("DataAggrProto")
+//    val sc = new SparkContext(conf)
 
   import spark.implicits._
   val lines = spark
