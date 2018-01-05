@@ -20,8 +20,8 @@ object DataAggrProto {
 
   val jobName = "DataAggrProto"
 
-  val conf = new SparkConf().setAppName(jobName)
-  val sc = new SparkContext(conf)
+  //val conf = new SparkConf().setAppName(jobName)
+  //val sc = new SparkContext(conf)
 
   val spark = SparkSession.builder.
   master("local[2]")

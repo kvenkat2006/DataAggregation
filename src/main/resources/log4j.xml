@@ -22,7 +22,7 @@
     </appender>
 
     <root>
-        <level value="INFO" />
+        <level value="ERROR" />
         <appender-ref ref="console" />
         <appender-ref ref="file" />
     </root>
