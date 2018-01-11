@@ -6,7 +6,7 @@ package com.dhee
 
 import org.apache.log4j.Logger
 import org.apache.spark.{SparkConf, SparkContext}
-import org.apache.spark.sql.SparkSession
+import org.apache.spark.sql.{Dataset, SparkSession}
 
 case class DealPnlData(busDate: String, dealId: String, prodId: String, portFolioId: String, scenarioId: Int, pnl: Float)
 
@@ -42,19 +42,26 @@ object DataAggrProto {
 
 //case class DealPnlData(busDate: String, dealId: String, prodId: String, portFolioId: String, scenarioId: Int, pnl: Float)
 
-   val wordCounts = lines.map(attr => DealPnlData(attr(0), attr(0),attr(0),attr(0),attr(0).trim.toInt,attr(0).trim.toFloat ) ).toDF()
+   val wordCounts = lines.map(_.split(","))
+                          .map(attr => DealPnlData(attr(0), attr(0),attr(0),attr(0),attr(0).trim.toInt,attr(0).trim.toFloat ) ).toDF()
 
-  // Start running the query that prints the running counts to the console
+    //val ds: Dataset[DealPnlData] = wordCounts.as[DealPnlData]
+
+    wordCounts.createOrReplaceTempView("pnlStructTable")
+    val aggDf = spark.sql("select portfolioId, sum(pnl) from pnlStructTable group by portfolioId")
+    // Start running the query that prints the running counts to the console
   //val query = wordCounts.writeStream
   //.outputMode("complete")
   //.format("console")
   //.start()
 
   //val wordCounts = lines.groupBy("key").count()
-  val query = wordCounts.writeStream
-  .outputMode("complete")
-  .format("console")
-  .start()
+//  val query = wordCounts.writeStream
+//  .outputMode("complete")
+//  .format("console")
+//  .start()
+
+    val query = aggDf.writeStream.outputMode("complete").format("console").start()
 
   query.awaitTermination()
 
