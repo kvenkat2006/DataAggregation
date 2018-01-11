@@ -44,15 +44,18 @@ object Producer extends App {
   for (line <- bufferedSource.getLines) {
     val splitLine = line.split(",")
     val data = new ProducerRecord[String, String](topic, splitLine(1), line)
-    //println(line.toUpperCase)
+    println(splitLine(1) + " --> " + line)
     producer.send(data)
     countOfRecordsPublished = countOfRecordsPublished +1
   }
 
+  val finishTime = System.currentTimeMillis()
+
   bufferedSource.close
 
 
-  System.out.println("Rate of publishing of messages (per second): " + countOfRecordsPublished * 1000 / (System.currentTimeMillis() - ttttt))
+  System.out.println("Published " + countOfRecordsPublished + " messages in " + (finishTime - ttttt) + " milliseconds." )
+  System.out.println("Rate of publishing of messages (per second): " + countOfRecordsPublished * 1000 / (finishTime - ttttt))
   producer.close()
 }
 

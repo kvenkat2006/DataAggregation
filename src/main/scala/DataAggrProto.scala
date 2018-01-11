@@ -4,14 +4,11 @@
 
 package com.dhee
 
-//import org.apache.spark.sql.functions._
-//import org.apache.spark.sql.SparkSession
-
-//import org.apache.spark.SparkContext
-//import org.apache.spark.SparkConf
 import org.apache.log4j.Logger
 import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.SparkSession
+
+case class DealPnlData(busDate: String, dealId: String, prodId: String, portFolioId: String, scenarioId: Int, pnl: Float)
 
 object DataAggrProto {
   def main(args: Array[String]) {
@@ -39,7 +36,13 @@ object DataAggrProto {
   .as[String]
 
   // Generate running word count
-  val wordCounts = lines.flatMap(_.split(" ")).groupBy("value").count()
+ // val wordCounts = lines.flatMap(_.split(" ")).groupBy("value").count()
+  //val wordCounts = lines.map(_.split(",")).filter(attr => attr(4) == 1).map(attr => (attr(3), attr(5)) ).groupByKey
+//.groupBy("value").count()
+
+//case class DealPnlData(busDate: String, dealId: String, prodId: String, portFolioId: String, scenarioId: Int, pnl: Float)
+
+   val wordCounts = lines.map(attr => DealPnlData(attr(0), attr(0),attr(0),attr(0),attr(0).trim.toInt,attr(0).trim.toFloat ) ).toDF()
 
   // Start running the query that prints the running counts to the console
   //val query = wordCounts.writeStream
