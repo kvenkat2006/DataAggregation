@@ -43,7 +43,7 @@ object DataAggrProto {
 //case class DealPnlData(busDate: String, dealId: String, prodId: String, portFolioId: String, scenarioId: Int, pnl: Float)
 
    val wordCounts = lines.map(_.split(","))
-                          .map(attr => DealPnlData(attr(0), attr(0),attr(0),attr(0),attr(0).trim.toInt,attr(0).trim.toFloat ) ).toDF()
+                          .map(attr => DealPnlData(attr(0), attr(1),attr(2),attr(3),attr(4).trim.toInt,attr(5).trim.toFloat ) ).toDF()
 
     //val ds: Dataset[DealPnlData] = wordCounts.as[DealPnlData]
 
