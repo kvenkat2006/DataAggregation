@@ -24,10 +24,8 @@ java -Dlog4j.configuration="file:~/KafkaStructExample/src/main/resources/log4j.x
 
 ## Run Consumer:
 cd /home/kumar/DataAggregation
-#java -Dlog4j.configuration="file:/home/kumar/DataAggregation/src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.DataAggrProto
 java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.DataAggrProto
 
 
 ## Run Producer:
-?java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.Producer 1000 test localhost:9092  data/verticalData_x.csv
-
+java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.Producer 1000 test localhost:9092  data/verticalData_x.csv
