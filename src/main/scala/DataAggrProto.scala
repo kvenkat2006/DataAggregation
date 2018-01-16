@@ -1,5 +1,5 @@
 /**
-  * Created by Kumar on 1/3/2018.
+  * Created by Dheefinity on 1/3/2018.
   */
 
 package com.dhee
@@ -18,15 +18,10 @@ object DataAggrProto {
   var logger = Logger.getLogger(this.getClass())
 
   val jobName = "DataAggrProto"
-//val connectionProperties = new Properties()
-//connectionProperties.put("user", "postgres")
-//connectionProperties.put("password", "postgres")
 
     val user="postgres"
     val pwd="postgres"
     val db="DATA_AGGR"
-    val wh="<your warehouse name>"
-    //val url="jdbc:snowflake://<account_name>.<region_id>.snowflakecomputing.com/?user="+user+"&password="+pwd+"&db="+db+"&warehouse="+wh
     val url = s"""jdbc:postgresql://localhost:5432/DATA_AGGR?user=postgres&password=postgres"""
     val writer = new JDBCSink(url, user, pwd)
 
