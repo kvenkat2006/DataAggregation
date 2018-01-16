@@ -18,13 +18,16 @@ object DataAggrProto {
   var logger = Logger.getLogger(this.getClass())
 
   val jobName = "DataAggrProto"
+//val connectionProperties = new Properties()
+//connectionProperties.put("user", "postgres")
+//connectionProperties.put("password", "postgres")
 
     val user="postgres"
     val pwd="postgres"
     val db="DATA_AGGR"
     val wh="<your warehouse name>"
     //val url="jdbc:snowflake://<account_name>.<region_id>.snowflakecomputing.com/?user="+user+"&password="+pwd+"&db="+db+"&warehouse="+wh
-    val url = s"""jdbc:postgresql://localhost:5432/testdb?user=postgres&password=postgres"""
+    val url = s"""jdbc:postgresql://localhost:5432/DATA_AGGR?user=postgres&password=postgres"""
     val writer = new JDBCSink(url, user, pwd)
 
     val spark = SparkSession.builder.
@@ -48,16 +51,14 @@ object DataAggrProto {
 
 
     rawDataDF.createOrReplaceTempView("pnlStructTable")
-    val aggDf = spark.sql("select portfolioId, sum(pnl) from pnlStructTable group by portfolioId")
+    val aggDf = spark.sql("select portfolioId, scenarioId, sum(pnl) from pnlStructTable group by portfolioId, scenarioId")
 
-    //val query = aggDf.writeStream.outputMode("complete").format("console").start()
 
     val query = aggDf
-      //.selectExpr("CAST(value AS STRING) as json_data")
       .writeStream
       .foreach(writer)
-      .trigger(Trigger.ProcessingTime("30 seconds"))
-      .outputMode("append") // could also be append or update
+      //.trigger(Trigger.ProcessingTime("30 seconds"))
+      .outputMode("update") // could also be append or update
       .start()
 
   query.awaitTermination()
