@@ -10,7 +10,9 @@ import org.apache.spark.sql.{Dataset, SparkSession}
 import org.apache.spark.sql.streaming
 import org.apache.spark.sql.streaming.Trigger
 
-case class DealPnlData(busDate: String, dealId: String, prodId: String, portFolioId: String, scenarioId: Int, pnl: Float)
+case class DealPnlData(busDate: String, dealId: String,
+                       prodId: String, portFolioId: String, scenarioId: Int, pnl: Float,
+                       baseOrWhatIf : String)
 
 object DataAggrProto {
   def main(args: Array[String]) {
@@ -23,7 +25,6 @@ object DataAggrProto {
     val pwd="postgres"
     val db="DATA_AGGR"
     val url = s"""jdbc:postgresql://localhost:5432/DATA_AGGR?user=postgres&password=postgres"""
-    val writer = new JDBCSink(url, user, pwd)
 
     val spark = SparkSession.builder.
   master("local[2]")
@@ -42,21 +43,34 @@ object DataAggrProto {
   .as[String]
 
    val rawDataDF = lines.map(_.split(","))
-                          .map(attr => DealPnlData(attr(0), attr(1),attr(2),attr(3),attr(4).trim.toInt,attr(5).trim.toFloat ) ).toDF()
+                          .map(attr => DealPnlData(attr(0), attr(1),attr(2),attr(3),attr(4).trim.toInt,attr(5).trim.toFloat, attr(6) ) ).toDF()
 
 
     rawDataDF.createOrReplaceTempView("pnlStructTable")
-    val aggDf = spark.sql("select portfolioId, scenarioId, sum(pnl) from pnlStructTable group by portfolioId, scenarioId")
+    val baseAggDf = spark.sql("select portfolioId, scenarioId, sum(pnl) from pnlStructTable WHERE baseOrWhatif = 'BASE' group by portfolioId, scenarioId")
 
 
-    val query = aggDf
+    val baseWriter = new JDBCSink(url, user, pwd, "base_aggr")
+
+    val query = baseAggDf
       .writeStream
-      .foreach(writer)
+      .foreach(baseWriter)
+      //.trigger(Trigger.ProcessingTime("30 seconds"))
+      .outputMode("update") // could also be append or update
+      .start()
+
+    val whatIfAggDf = spark.sql("select portfolioId, scenarioId, sum(pnl) from pnlStructTable WHERE baseOrWhatif = 'WHATIF' group by portfolioId, scenarioId")
+    val whatIfWriter = new JDBCSink(url, user, pwd, "whatif_aggr")
+
+    val query_WhatIf = whatIfAggDf
+      .writeStream
+      .foreach(whatIfWriter)
       //.trigger(Trigger.ProcessingTime("30 seconds"))
       .outputMode("update") // could also be append or update
       .start()
 
   query.awaitTermination()
+  query_WhatIf.awaitTermination()
 
   }
 }

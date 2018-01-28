@@ -13,7 +13,8 @@ import scala.io.Source
 
 
 object Producer extends App {
-  val num_of_events = args(0).toInt
+  //val isBase = args(0).toUpperCase.compareTo("BASE")==0
+  val baseOrWhatif = args(0)
   val topic = args(1)
   val brokers = args(2)
   val rnd = new Random()
@@ -29,22 +30,14 @@ object Producer extends App {
   val ttttt = System.currentTimeMillis()
 
 
-//  for (nEvents <- Range(0, num_of_events)) {
-//    val runtime = new Date().getTime()
-//    val key = "key_" + nEvents + "_" + rnd.nextInt(255)
-//    val msg = runtime + "," + nEvents + ",some_message," + key
-//    val data = new ProducerRecord[String, String](topic, key, msg)
-//
-//    producer.send(data)
-//  }
-
   var countOfRecordsPublished = 0;
 
   val bufferedSource = Source.fromFile(sourceFilePath)
   for (line <- bufferedSource.getLines) {
     val splitLine = line.split(",")
-    val data = new ProducerRecord[String, String](topic, splitLine(1), line)
-    println(splitLine(1) + " --> " + line)
+    val appendedLine = line + "," + baseOrWhatif
+    val data = new ProducerRecord[String, String](topic, splitLine(1), appendedLine)
+    println(splitLine(1) + " --> " + appendedLine)
     producer.send(data)
     countOfRecordsPublished = countOfRecordsPublished +1
   }

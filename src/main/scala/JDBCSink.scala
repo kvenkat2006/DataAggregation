@@ -7,7 +7,7 @@ import org.apache.spark.sql.ForeachWriter
 import org.apache.spark.sql.Row
 
 
-class JDBCSink(url: String, user:String, pwd:String) extends org.apache.spark.sql.ForeachWriter[org.apache.spark.sql.Row] {
+class JDBCSink(url: String, user:String, pwd:String, tableName:String) extends org.apache.spark.sql.ForeachWriter[org.apache.spark.sql.Row] {
 
   val driver = "org.postgresql.Driver"
   var statement:java.sql.Statement = _
@@ -24,7 +24,7 @@ class JDBCSink(url: String, user:String, pwd:String) extends org.apache.spark.sq
 
   def process(value: org.apache.spark.sql.Row): Unit = {
 
-    val insertStmt = s""" Insert Into TEST_AGGR (portfolio_id, scenario_id, sum_pnl) values ('${value(0)}', ${value(1)}, ${value(2)}) ON CONFLICT (portfolio_id, scenario_id) DO UPDATE SET sum_pnl = EXCLUDED.sum_pnl \n"""
+    val insertStmt = s""" Insert Into ${tableName} (portfolio_id, scenario_id, sum_pnl) values ('${value(0)}', ${value(1)}, ${value(2)}) ON CONFLICT (portfolio_id, scenario_id) DO UPDATE SET sum_pnl = EXCLUDED.sum_pnl \n"""
     statement.executeUpdate(insertStmt)
   }
 
