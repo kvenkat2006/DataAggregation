@@ -53,19 +53,21 @@ WITH (
 ALTER TABLE public.drilldown_request_table
   OWNER TO postgres;
   --------------------
---- DROP TABLE public.drilldown_table;
+
+-- DROP TABLE drilldown_table
 CREATE TABLE public.drilldown_table
 (
   drilldown_request_id integer NOT NULL,
-  dim_1_pnl   double precision,
+  dim_1      text NULL,
   scenario_id integer NOT NULL,
-  CONSTRAINT "drilldown_table_PK" PRIMARY KEY (drilldown_request_id, dim_1_pnl, scenario_id)
+  dim_1_pnl   double precision,
+  CONSTRAINT "drilldown_table_PK" PRIMARY KEY (drilldown_request_id, dim_1, scenario_id)
 )
 WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.drilldown_table
-  OWNER TO postgres;		
+  OWNER TO postgres;
 
 
 
