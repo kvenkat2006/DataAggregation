@@ -39,10 +39,16 @@ object StaticDataAggrProto {
     println("\n\n ******* Count of elements in rawBaseSubsetDF : " + rawBaseSubsetDF.count())
 
     val rawWhatIfSubsetDF = spark.sql(
-      s"""select busDate, dealId, prodId, portFolioId, scenarioId, pnl, baseOrWhatIf, uid, eventTime
+      s"""select busDate, dealId, prodId, portFolioId, scenarioId, pnl as whatIfPnl, baseOrWhatIf, uid, eventTime
          | from pnlStructTable WHERE baseOrWhatif = 'WHATIF' """.stripMargin)
 
     println("\n\n ******* Count of elements in rawWhatIfSubsetDF : " + rawWhatIfSubsetDF.count())
+
+    val testDF = rawBaseSubsetDF.join(rawWhatIfSubsetDF,
+                    Seq("busDate", "dealId", "prodId", "portFolioId", "scenarioId"),
+                    "inner")
+
+    testDF.show()
 
     val rawBaseJoinWhatIfDF = rawBaseSubsetDF.join(rawWhatIfSubsetDF,
                                             Seq("busDate", "dealId", "prodId", "portFolioId", "scenarioId"),
@@ -56,7 +62,7 @@ object StaticDataAggrProto {
                           rawBaseSubsetDF("prodId"),
                           rawBaseSubsetDF("portFolioId"),
                           rawBaseSubsetDF("scenarioId"),
-                          when(rawWhatIfSubsetDF("pnl").isNotNull,rawWhatIfSubsetDF("pnl"))
+                          when(rawWhatIfSubsetDF("whatIfPnl").isNotNull,rawWhatIfSubsetDF("whatIfPnl"))
                                     .otherwise(rawBaseSubsetDF("pnl")).as("pnl")
                           )
 
