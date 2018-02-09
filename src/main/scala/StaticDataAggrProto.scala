@@ -44,11 +44,11 @@ object StaticDataAggrProto {
 
     println("\n\n ******* Count of elements in rawWhatIfSubsetDF : " + rawWhatIfSubsetDF.count())
 
-    val testDF = rawBaseSubsetDF.join(rawWhatIfSubsetDF,
-                    Seq("busDate", "dealId", "prodId", "portFolioId", "scenarioId"),
-                    "inner")
-
-    testDF.show()
+//    val testDF = rawBaseSubsetDF.join(rawWhatIfSubsetDF,
+//                    Seq("busDate", "dealId", "prodId", "portFolioId", "scenarioId"),
+//                    "inner")
+//
+//    testDF.show()
 
     val rawBaseJoinWhatIfDF = rawBaseSubsetDF.join(rawWhatIfSubsetDF,
                                             Seq("busDate", "dealId", "prodId", "portFolioId", "scenarioId"),
