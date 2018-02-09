@@ -66,9 +66,15 @@ object DrillDownProto {
 
       drillDownDf.printSchema()
 
-      drillDownDf.write.mode("overwrite").jdbc(url, "drilldown_table", prop)
+      drillDownDf.write.mode("append").jdbc(url, "drilldown_table", prop)
 
       // Update drill_down_request_table, set processed = true for this request.
+      val stmt = pgconn.createStatement()
+      val updateStmt =
+        s""" UPDATE drilldown_request_table set processed = TRUE
+           | WHERE drilldown_request_id = ${drilldown_request_id}
+         """.stripMargin
+      stmt.executeUpdate(updateStmt)
 
     }
 
