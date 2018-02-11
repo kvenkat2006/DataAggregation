@@ -6,17 +6,29 @@ package com.dhee
 import org.apache.spark.sql.SparkSession
 //import org.apache.spark.sql.functions._
 
-/// Add Exception handling in the code. There is hardly any, currently.
+//RanSud: Typesafe changes next 1 line
+import com.typesafe.config.ConfigFactory
 
+/// Add Exception handling in the code. There is hardly any, currently.
 
 object DrillDownProto {
   def main(args: Array[String]): Unit = {
-    val url = "jdbc:postgresql://localhost:5432/DATA_AGGR"
+
+//RanSud: Typesafe changes next 4 lines
+    val config = ConfigFactory.parseFile(new java.io.File("src/main/scala/dataagg.conf"))
+    val db = config.getString("dataagg.config.consumer.dbname")
+
+    val url = s"""jdbc:postgresql://localhost:5432/$db"""
 
     val prop = new java.util.Properties
     prop.setProperty("driver", "org.postgresql.Driver")
-    prop.setProperty("user", "developer")
-    prop.setProperty("password", "developer")
+
+//RanSud: Typesafe changes next 5 lines
+    val user = config.getString("dataagg.config.general.pgresuser")
+    prop.setProperty("user", user)
+
+    val pwd = config.getString("dataagg.config.general.pgrespw")
+    prop.setProperty("password", pwd)
 
     val spark = SparkSession
       .builder()
@@ -25,12 +37,15 @@ object DrillDownProto {
       //.config("spark.some.config.option", "xxx")
       .getOrCreate()
 
-    val rawDataDF = spark.read.load("/home/kumar/DataAggregation/baseDfData/*.parquet")
+//RanSud: Typesafe changes next 2 lines
+    val baseDFpath = config.getString("dataagg.config.consumer.baseDFloc")
+    val rawDataDF = spark.read.load(s"""$baseDFpath/*.parquet""")
+
     rawDataDF.createOrReplaceTempView("pnlStructTable")
     rawDataDF.printSchema()
 
-
-    val db_con_str = s"""jdbc:postgresql://localhost:5432/DATA_AGGR?user=developer&password=developer"""
+//RanSud: Typesafe changes next 1 line
+    val db_con_str = s"""jdbc:postgresql://localhost:5432/$db?user=$user&password=$pwd"""
     import java.sql.{Connection, DriverManager, ResultSet}
     classOf[org.postgresql.Driver]
     val pgconn = DriverManager.getConnection(db_con_str)
