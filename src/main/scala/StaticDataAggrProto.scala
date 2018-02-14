@@ -6,14 +6,29 @@ package com.dhee
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
+//RanSud: Typesafe changes next 1 line
+import com.typesafe.config.ConfigFactory
+
 object StaticDataAggrProto {
   def main(args: Array[String]): Unit = {
 
-    val url = "jdbc:postgresql://localhost:5432/DATA_AGGR"
+//RanSud: Typesafe changes next 6 line
+    val config = ConfigFactory.parseFile(new java.io.File("src/main/scala/dataagg.conf"))
+
+    val db = config.getString("dataagg.config.consumer.dbname")
+
+//  val url = "jdbc:postgresql://localhost:5432/DATA_AGGR"
+    val url = s"""jdbc:postgresql://localhost:5432/$db"""
+
     val prop = new java.util.Properties
     prop.setProperty("driver", "org.postgresql.Driver")
-    prop.setProperty("user", "developer")
-    prop.setProperty("password", "developer")
+
+//RanSud: Typesafe changes next 5 lines
+    val user = config.getString("dataagg.config.general.pgresuser")
+    val pwd = config.getString("dataagg.config.general.pgrespw")
+
+    prop.setProperty("user", user)
+    prop.setProperty("password", pwd)
 
     val spark = SparkSession
       .builder()
@@ -22,7 +37,11 @@ object StaticDataAggrProto {
       //.config("spark.some.config.option", "xxx")
       .getOrCreate()
 
-    val rawDataDF = spark.read.load("/home/kumar/DataAggregation/baseDfData/*.parquet")
+//RanSud: Typesafe changes next 3 lines
+    val baseDFpath = config.getString("dataagg.config.consumer.baseDFloc")
+//  val rawDataDF = spark.read.load("/home/kumar/DataAggregation/baseDfData/*.parquet")
+    val rawDataDF = spark.read.load(s"""$baseDFpath/*.parquet""")
+
     rawDataDF.createOrReplaceTempView("pnlStructTable")
     rawDataDF.printSchema()
 
@@ -43,12 +62,6 @@ object StaticDataAggrProto {
          | from pnlStructTable WHERE baseOrWhatif = 'WHATIF' """.stripMargin)
 
     println("\n\n ******* Count of elements in rawWhatIfSubsetDF : " + rawWhatIfSubsetDF.count())
-
-//    val testDF = rawBaseSubsetDF.join(rawWhatIfSubsetDF,
-//                    Seq("busDate", "dealId", "prodId", "portFolioId", "scenarioId"),
-//                    "inner")
-//
-//    testDF.show()
 
     val rawBaseJoinWhatIfDF = rawBaseSubsetDF.join(rawWhatIfSubsetDF,
                                             Seq("busDate", "dealId", "prodId", "portFolioId", "scenarioId"),
@@ -72,11 +85,6 @@ object StaticDataAggrProto {
          |from whatIfFusedTable group by portfolioId, scenarioId""".stripMargin)
 
     whatIfAggDf.write.mode("overwrite").jdbc(url, "whatif_aggr", prop)
-
-//    while(true) {
-//      println("HELLO ")
-//    }
-
 
   }
 }

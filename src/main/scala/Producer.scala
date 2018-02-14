@@ -5,18 +5,28 @@
 
 package com.dhee
 
-
 import java.util.{Date, Properties}
 import org.apache.kafka.clients.producer.{KafkaProducer, ProducerRecord}
 import scala.util.Random
 import scala.io.Source
 
+//RanSud: Typesafe changes next 1 line
+import com.typesafe.config.ConfigFactory
 
 object Producer extends App {
+
+//RanSud: Typesafe changes next 1 line
+  val config = ConfigFactory.parseFile(new java.io.File("src/main/scala/dataagg.conf"))
+
   //val isBase = args(0).toUpperCase.compareTo("BASE")==0
   val baseOrWhatif = args(0)
-  val topic = args(1)
-  val brokers = args(2)
+
+//Ranjini: Typesafe changes next 4 lines
+//  val topic = args(1)
+  val topic = config.getString("dataagg.config.general.kafkatopic")
+//  val brokers = args(2)
+  val brokers = config.getString("dataagg.config.general.kafkabroker")
+
   val rnd = new Random()
   val props = new Properties()
   props.put("bootstrap.servers", brokers)
@@ -24,11 +34,14 @@ object Producer extends App {
   props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
   props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer")
 
-  val sourceFilePath = args(3)
+//RanSud: Typesafe changes next 4 lines
+//val sourceFilePath = args(3)
+  val baseFilePath = config.getString("dataagg.config.producer.basefile")
+  val wiFilePath = config.getString("dataagg.config.producer.wifile")
+  val sourceFilePath = if (args(0) == "BASE") baseFilePath else wiFilePath
 
   val producer = new KafkaProducer[String, String](props)
   val ttttt = System.currentTimeMillis()
-
 
   var countOfRecordsPublished = 0;
 
@@ -46,9 +59,9 @@ object Producer extends App {
 
   bufferedSource.close
 
-
   System.out.println("Published " + countOfRecordsPublished + " messages in " + (finishTime - ttttt) + " milliseconds." )
   System.out.println("Rate of publishing of messages (per second): " + countOfRecordsPublished * 1000 / (finishTime - ttttt))
+
   producer.close()
 }
 
