@@ -36,7 +36,7 @@ java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-k
 
 ## Run Producer:
 # BASE:
-java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.Producer BASE test localhost:9092  data/verticalData_x.csv
+java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.Producer BASE
 
-java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.Producer WHATIF test localhost:9092  data/verticalData_x_whatif.csv
+java -Dlog4j.configuration="file:src/main/resources/log4j.xml" -cp target/uber-kafkastructstream-1.0-SNAPSHOT.jar com.dhee.Producer WHATIF
 
