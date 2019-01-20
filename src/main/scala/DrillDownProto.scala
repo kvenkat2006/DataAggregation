@@ -6,7 +6,6 @@ package com.dhee
 import org.apache.spark.sql.SparkSession
 //import org.apache.spark.sql.functions._
 
-//RanSud: Typesafe changes next 1 line
 import com.typesafe.config.ConfigFactory
 
 /// Add Exception handling in the code. There is hardly any, currently.
@@ -14,20 +13,20 @@ import com.typesafe.config.ConfigFactory
 object DrillDownProto {
   def main(args: Array[String]): Unit = {
 
-//RanSud: Typesafe changes next 4 lines
     val config = ConfigFactory.parseFile(new java.io.File("src/main/scala/dataagg.conf"))
     val db = config.getString("dataagg.config.consumer.dbname")
+    val dbhost = config.getString("dataagg.config.consumer.dbhost")
 
-    val url = s"""jdbc:postgresql://localhost:5432/$db"""
+    //val url = s"""jdbc:postgresql://localhost:5432/$db"""
+    val url = s"""jdbc:postgresql://$dbhost:5432/$db"""
 
     val prop = new java.util.Properties
     prop.setProperty("driver", "org.postgresql.Driver")
 
-//RanSud: Typesafe changes next 5 lines
-    val user = config.getString("dataagg.config.general.pgresuser")
+    val user = config.getString("dataagg.config.consumer.pgresuser")
     prop.setProperty("user", user)
 
-    val pwd = config.getString("dataagg.config.general.pgrespw")
+    val pwd = config.getString("dataagg.config.consumer.pgrespw")
     prop.setProperty("password", pwd)
 
     val spark = SparkSession

@@ -30,19 +30,17 @@ object DataAggrProto {
 //RanSud: Typesafe changes next 13 lines
   val config = ConfigFactory.parseFile(new java.io.File("src/main/scala/dataagg.conf"))
 
-//val user="postgres"
-  val user = config.getString("dataagg.config.general.pgresuser")
-//val pwd="postgres"
-  val pwd = config.getString("dataagg.config.general.pgrespw") 
-//val db="DATA_AGGR"
+  val dbhost = config.getString("dataagg.config.consumer.dbhost")
+  val user = config.getString("dataagg.config.consumer.pgresuser")
+  val pwd = config.getString("dataagg.config.consumer.pgrespw") 
   val db = config.getString("dataagg.config.consumer.dbname")
   val tbl = config.getString("dataagg.config.consumer.tblname")
   val topic = config.getString("dataagg.config.general.kafkatopic")
   val broker = config.getString("dataagg.config.general.kafkabroker")
   val baseDFpath = config.getString("dataagg.config.consumer.baseDFloc")
 
-//val url = s"""jdbc:postgresql://localhost:5432/DATA_AGGR?user=postgres&password=postgres"""
-  val url = s"""jdbc:postgresql://localhost:5432/$db?user=$user&password=$pwd"""
+  //val url = s"""jdbc:postgresql://localhost:5432/$db?user=$user&password=$pwd"""
+  val url = s"""jdbc:postgresql://$dbhost:5432/$db?user=$user&password=$pwd"""
 
    val spark = SparkSession.builder.
   master("local[2]")

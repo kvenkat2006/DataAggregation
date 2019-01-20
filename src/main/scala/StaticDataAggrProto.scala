@@ -6,26 +6,25 @@ package com.dhee
 import org.apache.spark.sql.SparkSession
 import org.apache.spark.sql.functions._
 
-//RanSud: Typesafe changes next 1 line
 import com.typesafe.config.ConfigFactory
 
 object StaticDataAggrProto {
   def main(args: Array[String]): Unit = {
 
-//RanSud: Typesafe changes next 6 line
     val config = ConfigFactory.parseFile(new java.io.File("src/main/scala/dataagg.conf"))
 
     val db = config.getString("dataagg.config.consumer.dbname")
+    val dbhost = config.getString("dataagg.config.consumer.dbhost")
 
-//  val url = "jdbc:postgresql://localhost:5432/DATA_AGGR"
-    val url = s"""jdbc:postgresql://localhost:5432/$db"""
+    //val url = s"""jdbc:postgresql://localhost:5432/$db"""
+    val url = s"""jdbc:postgresql://$dbhost:5432/$db"""
 
     val prop = new java.util.Properties
     prop.setProperty("driver", "org.postgresql.Driver")
 
 //RanSud: Typesafe changes next 5 lines
-    val user = config.getString("dataagg.config.general.pgresuser")
-    val pwd = config.getString("dataagg.config.general.pgrespw")
+    val user = config.getString("dataagg.config.consumer.pgresuser")
+    val pwd = config.getString("dataagg.config.consumer.pgrespw")
 
     prop.setProperty("user", user)
     prop.setProperty("password", pwd)
