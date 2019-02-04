@@ -1,4 +1,20 @@
-﻿-- Table: public.base_aggr
+
+-- Database: DATA_AGGR
+
+-- DROP DATABASE "DATA_AGGR";
+
+CREATE DATABASE "DATA_AGGR"
+    WITH 
+    OWNER = developer
+    ENCODING = 'UTF8'
+    LC_COLLATE = 'en_US.UTF-8'
+    LC_CTYPE = 'en_US.UTF-8'
+    TABLESPACE = pg_default
+    CONNECTION LIMIT = -1;
+
+(Switch to database  DATA_AGGR);
+
+-- Table: public.base_aggr
 
 -- DROP TABLE public.base_aggr;
 
@@ -13,7 +29,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.base_aggr
-  OWNER TO postgres;
+  OWNER TO developer;
 
 ---------------------------------
 
@@ -32,7 +48,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.whatif_aggr
-  OWNER TO postgres;
+  OWNER TO developer;
 
 
 ----------------------------
@@ -51,7 +67,7 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.drilldown_request_table
-  OWNER TO postgres;
+  OWNER TO developer;
   --------------------
 
 -- DROP TABLE drilldown_table
@@ -67,17 +83,20 @@ WITH (
   OIDS=FALSE
 );
 ALTER TABLE public.drilldown_table
-  OWNER TO postgres;
+  OWNER TO developer;
 
 
 
 ----------------------------
 --- I threw in the insert statement. Run it only if you think you need it.
 --------------------
+DELETE FROM drilldown_request_table;
+
 INSERT INTO drilldown_request_table 
 (drilldown_request_id, filter_condition, drilldown_dim)
-values (nextval('drilldown_request_seq'), 'portFolioId:PORTF_003','prodId' );
+values (nextval('drilldown_request_seq'), 'portFolioId=''PORTF_003''','prodId' );
 
+commmit;
 
 ---------------------
 
